@@ -1,10 +1,7 @@
-<project name="WebServer" default="dist" basedir=".">
-   <target name="init">
-	<mkdir dir="${build}"/>
-   </target>
+<project name="WebServer" default="compile">
 
-   <target name="compile" depends="init">
-        <javac srcdir="${src}" destdir="${build}"/>
+   <target name="compile">
+        <javac srcdir="." destdir="." includeantruntime="false" fork="true"/>
    </target>
 
 </project>

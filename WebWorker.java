@@ -29,7 +29,6 @@ import java.util.TimeZone;
 
 public class WebWorker implements Runnable
 {
-    String code;
     String filePath;
 
 private Socket socket;
@@ -77,10 +76,13 @@ private void readHTTPRequest(InputStream is)
    line = r.readLine();
    } catch (Exception e) {
          System.err.println("Request error: "+e);
-      }
+      } // end catch
+   
+   // find filepath to read
    String a[] = new String [3];
    a = line.split(" ");
    filePath = a[1];
+   filePath = "." + filePath;
    
    return;
 }
@@ -100,8 +102,9 @@ private void writeHTTPHeader(OutputStream os, String contentType) throws Excepti
 
    } catch (Exception e) {
       os.write("HTTP/1.1 404 Not Found \n".getBytes());
+      os.write("file not found\n".getBytes());
       
-   }
+   } // end try exception
 
    os.write("Date: ".getBytes());
    os.write((df.format(d)).getBytes());
@@ -128,22 +131,27 @@ private void writeContent(OutputStream os) throws Exception
    String b;
    while (true) {
       try {
-         while (!r.ready()) Thread.sleep(1);
+        // while (!r.ready()) {
+        //System.out.println("test");
+        //Thread.sleep(1);
+        //}
          b = r.readLine();
          if (b.equals("<cs371date>")) {
          
-            b = "9/5/17";
+            b = "9/6/17 \n";
             first += b;
          
          } // end if
          
-         if (b.equals("<cs371server>")) {
+         else if (b.equals("<cs371server>")) {
          
-            b = "This is Josiah's Web Server for cs371";
+            b = "This is Josiah's Web Server for cs371 \n";
             first += b;
          
          } // end if
          
+         else
+           first += b;         
          System.err.println("Request line: ("+b+")");
          if (b.length()==0) break;
       } catch (Exception e) {
@@ -153,10 +161,6 @@ private void writeContent(OutputStream os) throws Exception
    } // end while
    os.write(first.getBytes());
 
-
-   //os.write("<html><head></head><body>\n".getBytes());
-   //os.write("<h3>My web server works!</h3>\n".getBytes());
-   //os.write("</body></html>\n".getBytes());
-}
+} // end writeContent
 
 } // end class
