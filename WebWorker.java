@@ -73,7 +73,11 @@ private void readHTTPRequest(InputStream is)
 {
    String line = " ";
    BufferedReader r = new BufferedReader(new InputStreamReader(is));
+   try {
    line = r.readLine();
+   } catch (Exception e) {
+         System.err.println("Request error: "+e);
+      }
    String a[] = new String [3];
    a = line.split(" ");
    filePath = a[1];
@@ -120,6 +124,35 @@ private void writeHTTPHeader(OutputStream os, String contentType) throws Excepti
 private void writeContent(OutputStream os) throws Exception
 {
    String first = "";
+   BufferedReader r = new BufferedReader(new FileReader(filePath));
+   String b;
+   while (true) {
+      try {
+         while (!r.ready()) Thread.sleep(1);
+         b = r.readLine();
+         if (b.equals("<cs371date>")) {
+         
+            b = "9/5/17";
+            first += b;
+         
+         } // end if
+         
+         if (b.equals("<cs371server>")) {
+         
+            b = "This is Josiah's Web Server for cs371";
+            first += b;
+         
+         } // end if
+         
+         System.err.println("Request line: ("+b+")");
+         if (b.length()==0) break;
+      } catch (Exception e) {
+         System.err.println("Request error: "+e);
+         break;
+      }
+   } // end while
+   os.write(first.getBytes());
+
 
    //os.write("<html><head></head><body>\n".getBytes());
    //os.write("<h3>My web server works!</h3>\n".getBytes());
